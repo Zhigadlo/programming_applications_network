@@ -26,11 +26,17 @@ catch (Exception ex)
 
 async Task ProcessClientAsync(Socket tcpClient)
 {
-    var bytesRead = new byte[tcpClient.Available];
+    var bytesRead = new byte[512];
 
     await tcpClient.ReceiveAsync(bytesRead);
+    Mathos.Parser.MathParser parser = new Mathos.Parser.MathParser();
+    var expression = Encoding.UTF8.GetString(bytesRead);
+    Console.WriteLine(expression);
+    await tcpClient.ReceiveAsync(bytesRead);
+    double x = Convert.ToDouble(Encoding.UTF8.GetString(bytesRead));
+    Console.WriteLine(x);
+    parser.LocalVariables.Add("x", x);
+    double result = parser.Parse(expression);
 
-    var message = Encoding.UTF8.GetString(bytesRead);
-    Console.WriteLine(message);
-    await tcpClient.SendAsync(Encoding.UTF8.GetBytes("Шчоб забути..."));
+    await tcpClient.SendAsync(Encoding.UTF8.GetBytes(result.ToString()));
 }
