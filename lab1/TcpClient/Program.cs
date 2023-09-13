@@ -6,48 +6,85 @@ using var tcpClient = new Socket(AddressFamily.InterNetwork, SocketType.Stream, 
 try
 {
     await tcpClient.ConnectAsync(new IPAddress(new byte[] { 127, 0, 0, 1 }), 8888);
-    while (true)
-    {
-        string expression = GetExpression();
 
-        byte[] data = Encoding.UTF8.GetBytes(expression);
-        // отправляем данные
-        await tcpClient.SendAsync(data);
-        Thread.Sleep(1000);
-        double x = GetDouble();
+    string expression = GetExpression("Enter mathematical expression: ");
+    byte[] data = Encoding.UTF8.GetBytes(expression);
+    await tcpClient.SendAsync(data);
 
-        await tcpClient.SendAsync(Encoding.UTF8.GetBytes(x.ToString()));
-        Console.WriteLine("Message was sent. Waiting for answer...");
-        // буфер для считывания одного байта
-        var bytesRead = new byte[512];
+    double xStart = GetDoubleValue("Enter x start(numeric value): ");
+    await tcpClient.SendAsync(Encoding.UTF8.GetBytes(xStart.ToString()));
 
-        tcpClient.Receive(bytesRead);
+    double learningRate = GetDoubleValue("Enter learning rate(double value): ");
+    await tcpClient.SendAsync(Encoding.UTF8.GetBytes(learningRate.ToString()));
 
-        Console.WriteLine(Encoding.UTF8.GetString(bytesRead));
-        Console.ReadKey();
-    }
+    int numIteration = GetIntValue("Enter number of iterations(int value): ");
+    await tcpClient.SendAsync(Encoding.UTF8.GetBytes(numIteration.ToString()));
+
+    Console.WriteLine("Message was sent. Waiting for answer...");
+
+    var bytesRead = new byte[512];
+
+    tcpClient.Receive(bytesRead);
+
+    Console.WriteLine($"Server answer: {Encoding.UTF8.GetString(bytesRead)}");
+    Console.WriteLine("Press any key...");
+    Console.ReadKey();
 }
 catch (Exception ex)
 {
     Console.WriteLine(ex.Message);
 }
 
-string GetExpression()
+string GetExpression(string text)
 {
-    //string expression = String.Empty;
-    //while (true)
-    //{
-    //    Console.Write("Enter mathematical expression: ");
-    //    expression = Console.ReadLine();
+    string expression = string.Empty;
+    while (true)
+    {
+        Console.Write(text);
+        expression = Console.ReadLine();
 
-    //    if (expression != String.Empty)
-    //        break;
-    //}
-    //return expression;
-    return "x^2";
+        if (expression != string.Empty)
+            break;
+
+        Console.WriteLine("Invalid input. String must be not empty.");
+        Console.WriteLine("Press any button to try again...");
+        Console.ReadKey();
+    }
+    return expression;
 }
 
-double GetDouble()
+double GetDoubleValue(string text)
 {
-    return 9.1;
+    double number;
+    while (true)
+    {
+        Console.Write(text);
+
+        if (double.TryParse(Console.ReadLine(), out number))
+        {
+            break;
+        }
+        Console.WriteLine("Invalid input. You must to write double value.");
+        Console.WriteLine("Press any button to try again...");
+        Console.ReadKey();
+    }
+    return number;
+}
+
+int GetIntValue(string text)
+{
+    int number;
+    while (true)
+    {
+        Console.Write(text);
+
+        if (int.TryParse(Console.ReadLine(), out number))
+        {
+            break;
+        }
+        Console.WriteLine("Invalid input. You must to write int value.");
+        Console.WriteLine("Press any button to try again...");
+        Console.ReadKey();
+    }
+    return number;
 }
