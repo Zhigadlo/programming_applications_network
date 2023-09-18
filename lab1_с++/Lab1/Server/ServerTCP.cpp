@@ -1,4 +1,6 @@
 #include "ServerTCP.h"
+#include "ws2tcpip.h"
+#define _WINSOCK_DEPRECATED_NO_WARNINGS
 
 Server::Server(int port, int clientCount)
 {
@@ -21,8 +23,9 @@ Server::Server(int port, int clientCount)
 	//описывает сокет для работы с протоколом 
 	SOCKADDR_IN sin;
 	sin.sin_family = PF_INET;
+	sin.sin_addr.s_addr = INADDR_ANY;
 	sin.sin_port = htons(port);
-	sin.sin_addr.s_addr = inet_addr("127.0.0.1");
+	std::cout << std::to_string(sin.sin_addr.s_addr) << std::endl;
 	//вызываем bind для связывания
 	retVal = bind(sock, (LPSOCKADDR)&sin, sizeof(sin));
 	if (retVal == SOCKET_ERROR)

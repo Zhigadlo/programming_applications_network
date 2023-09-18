@@ -10,7 +10,7 @@ ClientTCP::ClientTCP(int port)
 
     retVal = WSAStartup(ver, (LPWSADATA)&wsaData);
 
-    hostEnt = gethostbyname("127.0.0.1");
+    hostEnt = gethostbyname("26.36.24.136");
 
     if (!hostEnt)
     {
