@@ -22,7 +22,7 @@ Server::Server(int port, int clientCount)
 	SOCKADDR_IN sin;
 	sin.sin_family = PF_INET;
 	sin.sin_port = htons(port);
-	sin.sin_addr.s_addr = INADDR_ANY;
+	sin.sin_addr.s_addr = inet_addr("127.0.0.1");
 	//вызываем bind для связывания
 	retVal = bind(sock, (LPSOCKADDR)&sin, sizeof(sin));
 	if (retVal == SOCKET_ERROR)
